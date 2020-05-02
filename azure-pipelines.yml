@@ -3,10 +3,10 @@ trigger:
     include:
       - master
       - refs/tags/*
-    paths:
-      exclude:
-        - README.md
-        - NOTICE
+  paths:
+    exclude:
+      - README.md
+      - NOTICE
 
 pr:
   branches:

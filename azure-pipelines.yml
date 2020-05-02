@@ -3,6 +3,11 @@ trigger:
     include:
       - master
       - refs/tags/*
+    paths:
+      exclude:
+        - README.md
+        - NOTICE
+
 pr:
   branches:
     include:
@@ -10,6 +15,8 @@ pr:
   paths:
     exclude:
       - azure-pipelines.yml
+      - README.md
+      - NOTICE
 
 variables:
   - name: javaOptions
@@ -72,7 +79,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                echo -e "addSbtPlugin(\"org.foundweekends\" % \"sbt-bintray\" % \"0.5.6\")" > project/bintray.sbt
+                echo -e "addSbtPlugin(\"org.foundweekends\" % \"sbt-bintray\" % \"$(sbtBintrayVersion)\")" > project/bintray.sbt
                 echo -e "\nbintrayOrganization := Some(\"duchessa\")\n\nbintrayRepository := \"sbt-plugins\"" >> build.sbt
                 echo -e "\npublishMavenStyle := false" >> build.sbt
           - task: Bash@3

@@ -2,7 +2,7 @@ trigger:
   - master
 
 variables:
-#  - group: duchesa-devops
+  - group: duchesa-devops
   - name: javaOptions
     value: '"-Xmx4G -XX:MaxMetaspaceSize=1G"'
   - name: sbtBintrayVersion

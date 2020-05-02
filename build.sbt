@@ -2,7 +2,7 @@ name := "sbt-duchessa-build"
 
 organization := "io.github.duchessa"
 
-version := "0.3.0-SNAPSHOT"
+version := "0.3.0"
 
 startYear := Some(2020)
 

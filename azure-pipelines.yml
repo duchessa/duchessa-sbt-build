@@ -1,0 +1,75 @@
+trigger:
+  - master
+
+variables:
+#  - group: duchesa-devops
+  - name: javaOptions
+    value: '"-Xmx4G -XX:MaxMetaspaceSize=1G"'
+  - name: sbtBintrayVersion
+    value: '0.5.6'
+
+resources:
+  containers:
+    - container: jdk8
+      image: duchessa/el8-jdk:8
+    - container: jdk11
+      image: duchessa/el8-jdk:11
+
+stages:
+
+  - stage: 'Integration_Build'
+    displayName: 'Build Project & Run Integration Tests'
+    jobs:
+      - job: Build
+        displayName: 'Build & Test Project'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          matrix:
+            java8:
+              containerImage: 'jdk8'
+            java11:
+              containerImage: 'jdk11'
+        container: $[ variables['containerImage'] ]
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                sbt +test +package
+              noProfile: false
+              noRc: false
+            env:
+              JAVA_OPTS: $(javaOptions)
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/target/**/TEST-*.xml'
+
+  - stage: 'Publish_Release'
+    displayName: 'Publish Tagged Release'
+    dependsOn: 'Integration_Build'
+    condition: and(succeeded(), contains(variables['Build.SourceBranch'], 'refs/tags/'))
+    variables:
+      - group: duchessa-devops
+    jobs:
+      - job: Publish
+        displayName: 'Publish Binaries'
+        pool:
+          vmImage: 'ubuntu-latest'
+        container: jdk8
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo -e "addSbtPlugin(\"org.foundweekends\" % \"sbt-bintray\" % \"0.5.6\")" > project/bintray.sbt
+                echo -e "\nbintrayOrganization := Some(\"duchessa\")\n\nbintrayRepository := \"sbt-plugins\"" >> build.sbt
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: sbt clean publish
+              noProfile: false
+              noRc: false
+            env:
+              JAVA_OPTS: $(javaOptions) $(bintray-options)

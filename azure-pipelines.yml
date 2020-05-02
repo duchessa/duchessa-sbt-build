@@ -3,13 +3,13 @@ trigger:
     include:
       - master
       - refs/tags/*
-  pr:
-    branches:
-      include:
-        - master
-    paths:
-      exclude:
-        - azure-pipelines.yml
+pr:
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - azure-pipelines.yml
 
 variables:
   - name: javaOptions

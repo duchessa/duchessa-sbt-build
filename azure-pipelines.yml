@@ -2,9 +2,8 @@ trigger:
   - master
 
 variables:
-#  - group: duchesa-devops
   - name: javaOptions
-    value: '"-Xmx4G -XX:MaxMetaspaceSize=1G"'
+    value: '-Xmx4G -XX:MaxMetaspaceSize=1G'
   - name: sbtBintrayVersion
     value: '0.5.6'
 
@@ -72,4 +71,4 @@ stages:
               noProfile: false
               noRc: false
             env:
-              JAVA_OPTS: $(javaOptions) $(bintray-options)
+              JAVA_OPTS: '$(javaOptions) $(bintray-options)'

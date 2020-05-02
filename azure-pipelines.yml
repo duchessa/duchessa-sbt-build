@@ -1,5 +1,15 @@
 trigger:
-  - master
+  branches:
+    include:
+      - master
+      - refs/tags/*
+  pr:
+    branches:
+      include:
+        - master
+    paths:
+      exclude:
+        - azure-pipelines.yml
 
 variables:
   - name: javaOptions
@@ -48,7 +58,7 @@ stages:
   - stage: 'Publish_Release'
     displayName: 'Publish Tagged Release'
     dependsOn: 'Integration_Build'
-    condition: and(succeeded(), contains(variables['Build.SourceBranch'], 'refs/tags/'))
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
     variables:
       - group: duchessa-devops
     jobs:

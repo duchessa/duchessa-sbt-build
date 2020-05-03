@@ -2,6 +2,8 @@ package io.github.duchessa.sbt
 
 import sbt.Keys._
 import sbt._
+import sbt.plugins.JvmPlugin
+import dotty.tools.sbtplugin.DottyPlugin.autoImport.isDotty
 
 object DuchessaBuild extends AutoPlugin {
 
@@ -9,6 +11,9 @@ object DuchessaBuild extends AutoPlugin {
   case object DevelopmentBuild extends BuildProfile
   case object DeploymentBuild extends BuildProfile
 
+  override val requires = JvmPlugin
+
+  override val trigger = allRequirements
 
   override def buildSettings: Seq[Setting[_]] = Seq(
     buildProfile := {
@@ -17,46 +22,30 @@ object DuchessaBuild extends AutoPlugin {
   )
 
 
-  override def projectSettings: Seq[Setting[_]] = Seq(
-    scalacOptions ++= scalaCompileSettings(buildProfile.value),
-    name ~= formalize,
-    pomIncludeRepository := (_ => false)
-  )
+  override def projectSettings: Seq[Setting[_]] = {
+    def fromRoot[A](key: SettingKey[A]) = key := (LocalRootProject / key).value
+    def commonSettings = Seq(
+      homepage,
+      startYear,
+      licenses,
+      organization,
+      organizationName,
+      organizationHomepage,
+      developers,
+      apiURL,
+      scmInfo,
+      version,
+      scalaVersion,
+      crossScalaVersions)
+
+    commonSettings.map(fromRoot(_)) ++ Seq(
+      scalacOptions ++= ScalaCompileOptions(buildProfile.value, isDotty.value),
+      name ~= formalize,
+      pomIncludeRepository := (_ ⇒ false),
+    )
+  }
 
   val buildProfile = settingKey[BuildProfile]("Defines the current BuildProfile. Defaults to DevelopmentBuild unless 'profile' property is detected and set to 'deployment'.")
-
-  def scalaCompileSettings(profile: BuildProfile): Seq[String] = {
-    def baseOptions = Seq(
-      Opts.compile.deprecation,
-      Opts.compile.unchecked,
-      "-opt:unreachable-code",
-      "-opt:simplify-jumps",
-      "-opt:compact-locals",
-      "-opt:copy-propagation",
-      "-opt:redundant-casts",
-      "-opt:box-unbox",
-      "-opt:nullness-tracking",
-      "-opt:closure-invocations",
-      "-opt:allow-skip-core-module-init"
-    )
-
-    def developmentOptions = Seq(
-      Opts.compile.explaintypes,
-      "-Xcheckinit",
-      "-Xlint:_",
-      "-Ywarn-dead-code",
-      "-Ywarn-extra-implicit",
-      "-Ywarn-numeric-widen",
-      "-Ywarn-unused:implicits",
-      "-Ywarn-unused:imports",
-      "-Ywarn-unused:locals",
-      "-Ywarn-unused:params",
-      "-Ywarn-unused:patvars",
-      "-Ywarn-unused:privates",
-      "-Ywarn-value-discard"
-    )
-    if (profile == DevelopmentBuild) baseOptions ++ developmentOptions else baseOptions
-  }
 
   // Used to formalize project name for projects declared with the syntax 'val fooProject = project ...'
   private def formalize(name: String): String = name.split("-|(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")

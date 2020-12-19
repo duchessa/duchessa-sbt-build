@@ -23,11 +23,12 @@ resources:
     - repository: templates
       type: github
       name: duchessa/azure-pipelines-templates
-      endpoint: github.com_beautyandbellies-dev
+      endpoint: duchessa
 
 extends:
-  template: sbt-parent_bintray_publish.yml@templates
+  template: sbt-pipeline.yml@templates
   parameters:
-    publishOptionsVariableGroup: 'duchessa-devops'
+    publishStyle: 'bintray'
+    credentialsGroup: 'duchessa-devops'
     bintrayOrganisation: 'duchessa'
     bintrayRepository: 'sbt-plugins'

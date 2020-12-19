@@ -1,9 +1,9 @@
 package io.github.duchessa.sbt
 
+import dotty.tools.sbtplugin.DottyPlugin.autoImport.isDotty
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
-import dotty.tools.sbtplugin.DottyPlugin.autoImport.isDotty
 
 object DuchessaBuild extends AutoPlugin {
 
@@ -16,14 +16,16 @@ object DuchessaBuild extends AutoPlugin {
   override val trigger = allRequirements
 
   override def buildSettings: Seq[Setting[_]] = Seq(
+    versionScheme := Some("semver-spec"),
     buildProfile := {
-      if (sys.props.get("profile").contains("deployment")) DeploymentBuild else DevelopmentBuild
+      if (sys.props.get("profile").exists(p => p.startsWith("deployment") || p.startsWith("production")))
+        DeploymentBuild else DevelopmentBuild
     }
   )
 
 
   override def projectSettings: Seq[Setting[_]] = {
-    def fromRoot[A](key: SettingKey[A]) = key := (LocalRootProject / key).value
+    def fromRoot[A](key: SettingKey[A]): Setting[A] = key := (LocalRootProject / key).value
     def commonSettings = Seq(
       homepage,
       startYear,

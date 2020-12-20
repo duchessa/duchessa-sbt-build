@@ -13,7 +13,6 @@ object ScalaCompileOptions {
 
   def dottycBaseOptions = Seq(
     "-deprecation",
-    "-migration",
     "-explain-types",
     "-explain",
     "-unchecked"

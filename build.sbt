@@ -14,4 +14,4 @@ scalacOptions ++= Seq(
   Opts.compile.deprecation
 )
 
-addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.5.1")
+addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.5.3")

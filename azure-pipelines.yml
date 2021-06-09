@@ -28,7 +28,7 @@ resources:
 extends:
   template: sbt-pipeline.yml@templates
   parameters:
-    publishStyle: 'bintray'
+    publishStyle: 'maven'
     credentialsGroup: 'duchessa-devops'
-    bintrayOrganisation: 'duchessa'
-    bintrayRepository: 'sbt-plugins'
+    mavenSnapshotRepository: 'https://oss.sonatype.org/content/repositories/snapshots/'
+    mavenReleaseRepository: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'

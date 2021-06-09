@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 object OptsExtensionPlugin extends AutoPlugin {
 
   override def trigger: PluginTrigger = allRequirements
-  override def requires: Plugins = DuchessaBuild
+  override def requires: Plugins = DuchessaBuildPlugin
 
   object autoImport {
     implicit def optsToOptsSyntax(opts: Opts.type): OptsSyntax = OptsSyntax(opts)

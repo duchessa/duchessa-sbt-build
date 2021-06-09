@@ -1,6 +1,6 @@
 package io.github.duchessa.sbt
 
-import io.github.duchessa.sbt.DuchessaBuild.{BuildProfile, DeploymentBuild, DevelopmentBuild}
+import io.github.duchessa.sbt.DuchessaBuildPlugin.{BuildProfile, DeploymentBuild, DevelopmentBuild}
 
 object ScalaCompileOptions {
 
@@ -20,6 +20,7 @@ object ScalaCompileOptions {
 
   def dottycDevelopmentOptions = Seq(
     "-Xfatal-warnings",
+    "-Ycheck-init",
     "-feature"
   )
 
@@ -41,7 +42,6 @@ object ScalaCompileOptions {
     "-explaintypes",
     "-feature",
     "-Xcheckinit",
-    "-Xdev",
     "-Xlint:_",
     "-Werror",
     "-Ywarn-dead-code",
